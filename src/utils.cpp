@@ -10,6 +10,23 @@ void print_bytes(unsigned char* buf, const size_t len)
     printf("\n");
 }
 
+void block_xor(unsigned char* dst, unsigned char* a, unsigned char* b)
+{
+    for (auto j = 0; j < 16; j++) {
+        dst[j] = a[j] ^ b[j];
+    }
+}
+
+void block_leftshift(unsigned char* dst, unsigned char* src)
+{
+    unsigned char ovf = 0x00;
+    for (auto i = 15; i >= 0; i--) {
+        dst[i] = src[i] << 1;
+        dst[i] |= ovf;
+        ovf = (src[i] & 0x80) ? 1 : 0;
+    }
+}
+
 bool test()
 {
     // Known Plain Text and Cipher Text
@@ -52,7 +69,7 @@ bool test()
     // Calculate the cmac result
     unsigned char* mact;
     mact = (unsigned char*)malloc(16);
-    aes_cmac(in, mact, key);
+    aes_cmac(in, 16, mact, key);
 
     // Verify the aes-128 output
     bool aes_de_correct = !strncmp((char*)dect, (char*)in, 16);

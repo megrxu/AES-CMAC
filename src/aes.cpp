@@ -181,21 +181,21 @@ void InvMixColumns(unsigned char state[4][4])
 
 unsigned char mul(unsigned char a, unsigned char b)
 {
-    unsigned char bw[4];
-    unsigned char res = 0;
-    bw[0] = b;
+    unsigned char sb[4];
+    unsigned char out = 0;
+    sb[0] = b;
     for (auto i = 1; i < 4; i++) {
-        bw[i] = bw[i - 1] << 1;
-        if (bw[i - 1] & 0x80) {
-            bw[i] ^= 0x1b;
+        sb[i] = sb[i - 1] << 1;
+        if (sb[i - 1] & 0x80) {
+            sb[i] ^= 0x1b;
         }
     }
     for (auto i = 0; i < 4; i++) {
         if (a >> i & 0x01) {
-            res ^= bw[i];
+            out ^= sb[i];
         }
     }
-    return res;
+    return out;
 }
 
 void AddRoundKey(unsigned char state[4][4], unsigned char* key)

@@ -2,29 +2,63 @@
 #include "cmac.h"
 #include "utils.h"
 
+void perform(char* argv[]);
+void run(char* argv[]);
+
 int main(int argc, char* argv[])
 {
-    test();
-    unsigned char key[] = {
-        0x2b, 0x7e, 0x15, 0x16,
-        0x28, 0xae, 0xd2, 0xa6,
-        0xab, 0xf7, 0x15, 0x88,
-        0x09, 0xcf, 0x4f, 0x3c
-    };
-
-    unsigned char in[] = {
-        0x32, 0x43, 0xf6, 0xa8,
-        0x88, 0x5a, 0x30, 0x8d,
-        0x31, 0x31, 0x98, 0xa2,
-        0xe0, 0x37, 0x07, 0x34
-    };
-
-    unsigned char* out = (unsigned char*)malloc(16);
-    print_bytes(in, 16);
-    aes_128_encrypt(in, out, key);
-    print_bytes(out, 16);
-    aes_128_decrypt(out, out, key);
-    print_bytes(out, 16);
+    if (argc == 1) {
+        test();
+        run(argv);
+    } else if (argc == 3) {
+        perform(argv);
+    } else {
+        printf("Usage: %s MESSAGE KEY\n", argv[0]);
+    }
 
     return 0;
+}
+
+void run(char* argv[])
+{
+    unsigned char key[] = {
+        0x31, 0x50, 0x10, 0x47,
+        0x17, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00
+    };
+
+    unsigned char message[] = {
+        "Information Security is a multidisciplinary area of study and professional activity which is concerned with the development and implementation of security mechanisms of all available types (technical, organizational, human-oriented and legal) to keep information in all its locations (within and outside the organization's perimeter) and, consequently, information systems, where information is created, processed, stored, transmitted and destroyed, free from threats.This project is finished by RAY."
+    };
+
+    unsigned char out[16];
+
+    printf("Input message:\n\"%s\"\n", message);
+    printf("Key:\n");
+    print_bytes(key, 16);
+    aes_cmac(message, 16, (unsigned char*)out, key);
+    printf("The AES-128-CMAC result:\n");
+    print_bytes(out, 16);
+    printf("\nUsage: %s MESSAGE KEY\n", argv[0]);
+}
+
+void perform(char* argv[])
+{
+    printf("Input message:\n\"%s\"\n", argv[1]);
+    unsigned char key[16];
+    unsigned char out[16];
+    memset(out, 0x00, 16);
+    memset(key, 0x00, 16);
+    if (strlen(argv[1]) > 16) {
+        memcpy(key, argv[2], 16);
+    } else {
+        memcpy(key, argv[2], strlen(argv[2]));
+    }
+    printf("Key:\n");
+    print_bytes(key, 16);
+    aes_cmac((unsigned char*)(argv[1]), strlen(argv[1]), (unsigned char*)out, key);
+
+    printf("The AES-128-CMAC result:\n");
+    print_bytes(out, 16);
 }
