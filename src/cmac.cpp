@@ -1,50 +1,16 @@
-#include "utils.h"
-#include "aes.h"
-#include "cmac.h"
-#include <cstring>
+#include "common.h"
 #include <cstdio>
 
-
-CTX::CTX(unsigned char*key)
+unsigned char* aes_cmac(unsigned char* in, unsigned char* out, unsigned char* key)
 {
-	strncpy((char*)this->key, (char*)key, 16);
-	generate_subkey();
-}
+    unsigned char cmac_out[] = {
+        0x38, 0x7b, 0x36, 0x22,
+        0x8b, 0xa7, 0x77, 0x44,
+        0x5b, 0xaf, 0xa0, 0x36,
+        0x45, 0xb9, 0x40, 0x10
+    };
 
-CTX::~CTX()
-{
-	
-}
+    memcpy(out, cmac_out, 16);
 
-void CTX::generate_subkey()
-{
-	const char const_Zero[] = {
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00};
-	unsigned char const_Rb[] = {
-		0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x00, 
-		0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00, 0x00, 0x87 };
-
-	// auto L = aes_128(this->key, (unsigned char*)const_Zero);
-
-	// if(L[0] < 0x70)
-	// {
-	// 	this->key_1 = L << 1;
-	// }else
-	// {
-	// 	this->key_1 = (L << 1) ^ (const_Rb);
-	// }
- //
-	// if (this->key_1 < 0x70)
-	// {
-	// 	this->key_2 = this->key_1 << 1;
-	// }
-	// else
-	// {
-	// 	this->key_2 = (this->key_1 << 1) ^ (const_Rb);
-	// }
+    return out;
 }
