@@ -92,7 +92,7 @@ bool test()
     unsigned char cmac_out[16];
     aes_cmac(in, 16, cmac_out, key);
 
-    // Verify the aes-128 output
+    // Verify the AES output
     bool aes_128_de = !strncmp((char*)in_128, (char*)in, 16);
     bool aes_192_de = !strncmp((char*)in_192, (char*)in, 16);
     bool aes_256_de = !strncmp((char*)in_256, (char*)in, 16);

@@ -1,5 +1,6 @@
 #include "aes.h"
 #include "cmac.h"
+#include "encrypt.h"
 #include "utils.h"
 
 #define ACCENTCOLOR "\033[1;36m"
@@ -45,9 +46,23 @@ void run(char* argv[])
     printf("\"%s\"\n", message);
     printf("%sKey%s\n", ACCENTCOLOR, DEFAULT);
     print_bytes(key, 16);
-    aes_cmac(message, strlen((char*)message), (unsigned char*)out, key);
+    aes_cmac(message, strlen((char*)message) + 1, (unsigned char*)out, key);
     printf("%sAES-128-CMAC Result%s\n", ACCENTCOLOR, DEFAULT);
     print_bytes(out, 16);
+
+    unsigned int n = 0;
+    unsigned char* C;
+
+    C = ecb_encrypt(message, key, aes_128_encrypt, &n);
+    printf("%sAES-128-ECB Encrypt Result%s\n", ACCENTCOLOR, DEFAULT);
+    for (auto i = 0; i < n; i++) {
+        print_bytes(C + i * 16, 16);
+    }
+
+    C = ecb_decrypt(C, key, aes_128_decrypt, &n);
+    printf("%sAES-128-ECB Decrypt Result%s\n", ACCENTCOLOR, DEFAULT);
+    printf("\"%s\"\n", C);
+
     printf("\nUsage: %s MESSAGE KEY\n", argv[0]);
 }
 
@@ -59,14 +74,27 @@ void perform(char* argv[])
     unsigned char out[16];
     memset(out, 0x00, 16);
     memset(key, 0x00, 16);
-    if (strlen(argv[1]) > 16) {
+    if (strlen(argv[2]) > 16) {
         memcpy(key, argv[2], 16);
     } else {
         memcpy(key, argv[2], strlen(argv[2]));
     }
     printf("%sKey%s\n", ACCENTCOLOR, DEFAULT);
     print_bytes(key, 16);
-    aes_cmac((unsigned char*)(argv[1]), strlen(argv[1]), (unsigned char*)out, key);
+    aes_cmac((unsigned char*)(argv[1]), strlen(argv[1]) + 1, (unsigned char*)out, key);
     printf("%sAES-128-CMAC Result%s\n", ACCENTCOLOR, DEFAULT);
     print_bytes(out, 16);
+
+    unsigned int n = 0;
+    unsigned char* C;
+
+    C = ecb_encrypt((unsigned char*)argv[1], (unsigned char*)argv[2], aes_128_encrypt, &n);
+    printf("%sAES-128-ECB Encrypt Result%s\n", ACCENTCOLOR, DEFAULT);
+    for (auto i = 0; i < n; i++) {
+        print_bytes(C + i * 16, 16);
+    }
+
+    C = ecb_decrypt(C, (unsigned char*)argv[2], aes_128_decrypt, &n);
+    printf("%sAES-128-ECB Decrypt Result%s\n", ACCENTCOLOR, DEFAULT);
+    printf("\"%s\"", C);
 }
