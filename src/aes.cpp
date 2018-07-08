@@ -5,70 +5,114 @@
 unsigned char* aes_128_encrypt(unsigned char* in, unsigned char* out, unsigned char* key)
 {
     unsigned char* w;
-    w = (unsigned char*)malloc(16 * 11);
-    KeyExpansion(key, w);
-    Cipher(in, out, w);
+    unsigned char Nk = 4, Nr = 10;
+    w = (unsigned char*)malloc(16 * (Nr + 1));
+    KeyExpansion(key, w, Nk, Nr);
+    Cipher(in, out, w, Nk, Nr);
     return out;
 }
 
 unsigned char* aes_128_decrypt(unsigned char* in, unsigned char* out, unsigned char* key)
 {
     unsigned char* w;
-    w = (unsigned char*)malloc(16 * 11);
-    KeyExpansion(key, w);
-    InvCipher(in, out, w);
+    unsigned char Nk = 4, Nr = 10;
+    w = (unsigned char*)malloc(16 * (Nr + 1));
+    KeyExpansion(key, w, Nk, Nr);
+    InvCipher(in, out, w, Nk, Nr);
+    return out;
+}
+
+unsigned char* aes_192_encrypt(unsigned char* in, unsigned char* out, unsigned char* key)
+{
+    unsigned char* w;
+    unsigned char Nk = 6, Nr = 12;
+    w = (unsigned char*)malloc(16 * (Nr + 1));
+    KeyExpansion(key, w, Nk, Nr);
+    Cipher(in, out, w, Nk, Nr);
+    return out;
+}
+
+unsigned char* aes_192_decrypt(unsigned char* in, unsigned char* out, unsigned char* key)
+{
+    unsigned char* w;
+    unsigned char Nk = 6, Nr = 12;
+    w = (unsigned char*)malloc(16 * (Nr + 1));
+    KeyExpansion(key, w, Nk, Nr);
+    InvCipher(in, out, w, Nk, Nr);
+    return out;
+}
+
+unsigned char* aes_256_encrypt(unsigned char* in, unsigned char* out, unsigned char* key)
+{
+    unsigned char* w;
+    unsigned char Nk = 8, Nr = 14;
+    w = (unsigned char*)malloc(16 * (Nr + 1));
+    KeyExpansion(key, w, Nk, Nr);
+    Cipher(in, out, w, Nk, Nr);
+    return out;
+}
+
+unsigned char* aes_256_decrypt(unsigned char* in, unsigned char* out, unsigned char* key)
+{
+    unsigned char* w;
+    unsigned char Nk = 8, Nr = 14;
+    w = (unsigned char*)malloc(16 * (Nr + 1));
+    KeyExpansion(key, w, Nk, Nr);
+    InvCipher(in, out, w, Nk, Nr);
     return out;
 }
 
 // The Cipher
-void Cipher(unsigned char* in, unsigned char* out, unsigned char* w)
+void Cipher(unsigned char* in, unsigned char* out, unsigned char* w, unsigned char Nk, unsigned char Nr)
 {
-    unsigned char state[4][4];
-    memcpy(state, in, 16);
+    unsigned char state[Nk][4];
+    memcpy(state, in, 4 * Nk);
 
     AddRoundKey(state, w);
-    for (auto round = 0; round < 10; round++) {
+    for (auto round = 0; round < Nr; round++) {
         SubBytes(state);
         ShiftRows(state);
-        if (round != 9)
+        if (round != (Nr - 1))
             MixColumns(state);
         AddRoundKey(state, (unsigned char*)(w + (round + 1) * 16));
     }
-    memcpy(out, state, 16);
+    memcpy(out, state, Nk * 4);
 }
 
-void InvCipher(unsigned char* in, unsigned char* out, unsigned char* w)
+void InvCipher(unsigned char* in, unsigned char* out, unsigned char* w, unsigned char Nk, unsigned char Nr)
 {
-    unsigned char state[4][4];
+    unsigned char state[Nk][4];
     memcpy(state, in, 16);
 
-    AddRoundKey(state, w + (10 * 16));
-    for (auto round = 9; round >= 0; round--) {
+    AddRoundKey(state, w + (Nr * 16));
+    for (auto round = Nr - 1; round >= 0; round--) {
         InvShiftRows(state);
         InvSubBytes(state);
         AddRoundKey(state, (unsigned char*)(w + round * 16));
         if (round)
             InvMixColumns(state);
     }
-    memcpy(out, state, 16);
+    memcpy(out, state, Nk * 4);
 }
 
 // Key Expansion
-void KeyExpansion(unsigned char* key, unsigned char* w)
+void KeyExpansion(unsigned char* key, unsigned char* w, unsigned char Nk, unsigned char Nr)
 {
     unsigned char tmp[4];
-    memcpy(w, key, 16);
+    memcpy(w, key, 4 * Nk);
 
-    for (auto i = 4 * 4; i < 4 * 11 * 4; i += 4) {
+    for (auto i = 4 * Nk; i < 4 * (Nr + 1) * 4; i += 4) {
         memcpy(tmp, w + i - 4, 4);
-        if (i % 16 == 0) {
+        if (i % (Nk * 4) == 0) {
             SubWord(RotWord(tmp));
             for (auto j = 0; j < 4; j++) {
-                tmp[j] ^= Rcon[i / 4 + j];
+                tmp[j] ^= Rcon[i / Nk + j];
             }
+        } else if (Nk > 6 && (i % (Nk * 4)) == 16) {
+            SubWord(tmp);
         }
         for (auto j = 0; j < 4; j++)
-            w[i + j] = w[i - 16 + j] ^ tmp[j];
+            w[i + j] = w[i - Nk * 4 + j] ^ tmp[j];
     }
 }
 

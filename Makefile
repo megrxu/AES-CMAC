@@ -21,6 +21,11 @@ COMPILE_FLAGS = -std=c++11 -Wall -Wextra -g -w
 INCLUDES = -I include/ -I /usr/local/include
 LIBS = 
 
+# colors
+ACCENTCOLOR = \033[1;33m
+CLEAN = \033[1;32m
+DEFAULT = \033[0m
+
 .PHONY: default_target
 default_target: release
 
@@ -31,28 +36,28 @@ release: dirs
 
 .PHONY: dirs
 dirs:
-	@echo "Creating directories"
+	@echo "$(ACCENTCOLOR)Creating directories$(DEFAULT)"
 	@mkdir -p $(dir $(OBJECTS))
 	@mkdir -p $(BIN_PATH)
 
 .PHONY: clean
 clean:
-	@echo "Deleting $(BIN_NAME) symlink"
+	@echo "$(CLEAN)Deleting $(BIN_NAME) symlink$(DEFAULT)"
 	@$(RM) $(BIN_NAME)
-	@echo "Deleting directories"
+	@echo "$(CLEAN)Deleting directories$(DEFAULT)"
 	@$(RM) -r $(BUILD_PATH)
 	@$(RM) -r $(BIN_PATH)
 
 # checks the executable and symlinks to the output
 .PHONY: all
 all: $(BIN_PATH)/$(BIN_NAME)
-	@echo "Making symlink: $(BIN_NAME) -> $<"
+	@echo "$(ACCENTCOLOR)Making symlink: $(BIN_NAME) -> $<$(DEFAULT)"
 	@$(RM) $(BIN_NAME)
 	@ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
 
 # Creation of the executable
 $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
-	@echo "Linking: $@"
+	@echo "$(ACCENTCOLOR)Linking: $@$(DEFAULT)"
 	$(CXX) $(OBJECTS) -o $@ $(LIBS)
 
 # Add dependency files, if they exist
@@ -60,5 +65,5 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 
 # Source file rules
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
-	@echo "Compiling: $< -> $@"
+	@echo "$(ACCENTCOLOR)Compiling: $< -> $@$(DEFAULT)"
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@

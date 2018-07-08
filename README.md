@@ -1,4 +1,6 @@
-# AES-128 and AES-CMAC Implementation in C++
+# AES and AES-CMAC
+
+AES(-128, -192, -256) and AES-CMAC implementation in C++.
 
 ## Reference
 

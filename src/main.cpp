@@ -2,13 +2,20 @@
 #include "cmac.h"
 #include "utils.h"
 
+#define ACCENTCOLOR "\033[1;36m"
+#define DEFAULT "\033[0m"
+
 void perform(char* argv[]);
 void run(char* argv[]);
 
 int main(int argc, char* argv[])
 {
     if (argc == 1) {
+        printf("\033[1;35m");
+        printf("TEST CASES\n");
+        printf("\033[0m");
         test();
+        printf("\n");
         run(argv);
     } else if (argc == 3) {
         perform(argv);
@@ -29,23 +36,25 @@ void run(char* argv[])
     };
 
     unsigned char message[] = {
-        "Information Security is a multidisciplinary area of study and professional activity which is concerned with the development and implementation of security mechanisms of all available types (technical, organizational, human-oriented and legal) to keep information in all its locations (within and outside the organization's perimeter) and, consequently, information systems, where information is created, processed, stored, transmitted and destroyed, free from threats.This project is finished by RAY."
+        "Information Security is a multidisciplinary area of study and professional activity which is concerned with the development and implementation of security mechanisms of all available types (technical, organizational, human-oriented and legal) to keep information in all its locations (within and outside the organization's perimeter) and, consequently, information systems, where information is created, processed, stored, transmitted and destroyed, free from threats.This project is finished by GUORUI XU."
     };
 
     unsigned char out[16];
 
-    printf("Input message:\n\"%s\"\n", message);
-    printf("Key:\n");
+    printf("%sInput message%s\n", ACCENTCOLOR, DEFAULT);
+    printf("\"%s\"\n", message);
+    printf("%sKey%s\n", ACCENTCOLOR, DEFAULT);
     print_bytes(key, 16);
-    aes_cmac(message, 16, (unsigned char*)out, key);
-    printf("The AES-128-CMAC result:\n");
+    aes_cmac(message, strlen((char*)message), (unsigned char*)out, key);
+    printf("%sAES-128-CMAC Result%s\n", ACCENTCOLOR, DEFAULT);
     print_bytes(out, 16);
     printf("\nUsage: %s MESSAGE KEY\n", argv[0]);
 }
 
 void perform(char* argv[])
 {
-    printf("Input message:\n\"%s\"\n", argv[1]);
+    printf("%sInput message%s\n", ACCENTCOLOR, DEFAULT);
+    printf("\"%s\"\n", argv[1]);
     unsigned char key[16];
     unsigned char out[16];
     memset(out, 0x00, 16);
@@ -55,10 +64,9 @@ void perform(char* argv[])
     } else {
         memcpy(key, argv[2], strlen(argv[2]));
     }
-    printf("Key:\n");
+    printf("%sKey%s\n", ACCENTCOLOR, DEFAULT);
     print_bytes(key, 16);
     aes_cmac((unsigned char*)(argv[1]), strlen(argv[1]), (unsigned char*)out, key);
-
-    printf("The AES-128-CMAC result:\n");
+    printf("%sAES-128-CMAC Result%s\n", ACCENTCOLOR, DEFAULT);
     print_bytes(out, 16);
 }
