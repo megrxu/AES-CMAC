@@ -25,9 +25,11 @@ unsigned char* aes_cmac(unsigned char* in, unsigned int length, unsigned char* o
     }
 
     unsigned char M[n][const_Bsize];
-    memset(M, 0, n * const_Bsize);
-    memcpy(M, in, length);
-
+    memset(M[0], 0, n * const_Bsize);
+    memcpy(M[0], in, length);
+    if (!flag) {
+        memset(M[0] + length +1, 0x80, 1);
+    }
     if (flag) {
         block_xor(M[n - 1], M[n - 1], K1);
     } else {
