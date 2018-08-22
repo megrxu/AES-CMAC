@@ -1,4 +1,4 @@
-CXX ?= g++
+CXX ?= gcc
 
 # path
 SRC_PATH = src
@@ -9,7 +9,7 @@ BIN_PATH = build/bin
 BIN_NAME = aes-cmac.out
 
 # extensions
-SRC_EXT = cpp
+SRC_EXT = c
 
 # code lists
 SOURCES = $(shell find $(SRC_PATH) -name '*.$(SRC_EXT)' | sort -k 1nr | cut -f2-)
@@ -17,14 +17,9 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 DEPS = $(OBJECTS:.o=.d)
 
 # flags
-COMPILE_FLAGS = -std=c++11 -Wall -Wextra -g -w
+COMPILE_FLAGS = -Wall -Wextra -g -w
 INCLUDES = -I include/ -I /usr/local/include
 LIBS = 
-
-# colors
-ACCENTCOLOR = \033[1;33m
-CLEAN = \033[1;32m
-DEFAULT = \033[0m
 
 .PHONY: default_target
 default_target: release
@@ -36,28 +31,28 @@ release: dirs
 
 .PHONY: dirs
 dirs:
-	@echo "$(ACCENTCOLOR)Creating directories$(DEFAULT)"
+	@echo "Creating directories"
 	@mkdir -p $(dir $(OBJECTS))
 	@mkdir -p $(BIN_PATH)
 
 .PHONY: clean
 clean:
-	@echo "$(CLEAN)Deleting $(BIN_NAME) symlink$(DEFAULT)"
+	@echo "Deleting $(BIN_NAME) symlink"
 	@$(RM) $(BIN_NAME)
-	@echo "$(CLEAN)Deleting directories$(DEFAULT)"
+	@echo "Deleting directories"
 	@$(RM) -r $(BUILD_PATH)
 	@$(RM) -r $(BIN_PATH)
 
 # checks the executable and symlinks to the output
 .PHONY: all
 all: $(BIN_PATH)/$(BIN_NAME)
-	@echo "$(ACCENTCOLOR)Making symlink: $(BIN_NAME) -> $<$(DEFAULT)"
+	@echo "Making symlink: $(BIN_NAME) -> $<"
 	@$(RM) $(BIN_NAME)
 	@ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
 
 # Creation of the executable
 $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
-	@echo "$(ACCENTCOLOR)Linking: $@$(DEFAULT)"
+	@echo "Linking: $@"
 	$(CXX) $(OBJECTS) -o $@ $(LIBS)
 
 # Add dependency files, if they exist
@@ -65,5 +60,5 @@ $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)
 
 # Source file rules
 $(BUILD_PATH)/%.o: $(SRC_PATH)/%.$(SRC_EXT)
-	@echo "$(ACCENTCOLOR)Compiling: $< -> $@$(DEFAULT)"
+	@echo "Compiling: $< -> $@"
 	$(CXX) $(CXXFLAGS) $(INCLUDES) -MP -MMD -c $< -o $@
