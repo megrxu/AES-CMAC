@@ -9,6 +9,7 @@ unsigned char* aes_128_encrypt(unsigned char* in, unsigned char* out, unsigned c
     w = (unsigned char*)malloc(16 * (Nr + 1));
     KeyExpansion(key, w, Nk, Nr);
     Cipher(in, out, w, Nk, Nr);
+    free(w);
     return out;
 }
 
@@ -19,6 +20,7 @@ unsigned char* aes_128_decrypt(unsigned char* in, unsigned char* out, unsigned c
     w = (unsigned char*)malloc(16 * (Nr + 1));
     KeyExpansion(key, w, Nk, Nr);
     InvCipher(in, out, w, Nk, Nr);
+    free(w);
     return out;
 }
 
@@ -29,6 +31,7 @@ unsigned char* aes_192_encrypt(unsigned char* in, unsigned char* out, unsigned c
     w = (unsigned char*)malloc(16 * (Nr + 1));
     KeyExpansion(key, w, Nk, Nr);
     Cipher(in, out, w, Nk, Nr);
+    free(w);
     return out;
 }
 
@@ -39,6 +42,7 @@ unsigned char* aes_192_decrypt(unsigned char* in, unsigned char* out, unsigned c
     w = (unsigned char*)malloc(16 * (Nr + 1));
     KeyExpansion(key, w, Nk, Nr);
     InvCipher(in, out, w, Nk, Nr);
+    free(w);
     return out;
 }
 
@@ -49,6 +53,7 @@ unsigned char* aes_256_encrypt(unsigned char* in, unsigned char* out, unsigned c
     w = (unsigned char*)malloc(16 * (Nr + 1));
     KeyExpansion(key, w, Nk, Nr);
     Cipher(in, out, w, Nk, Nr);
+    free(w);
     return out;
 }
 
@@ -59,6 +64,7 @@ unsigned char* aes_256_decrypt(unsigned char* in, unsigned char* out, unsigned c
     w = (unsigned char*)malloc(16 * (Nr + 1));
     KeyExpansion(key, w, Nk, Nr);
     InvCipher(in, out, w, Nk, Nr);
+    free(w);
     return out;
 }
 

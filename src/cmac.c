@@ -50,6 +50,8 @@ unsigned char* aes_cmac(unsigned char* in, unsigned int length, unsigned char* o
     }
     block_xor(Y, M[n - 1], X);
     aes_128_encrypt(Y, out, key);
+    free(K1);
+    free(K2);
     return out;
 }
 
