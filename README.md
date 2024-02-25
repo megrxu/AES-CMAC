@@ -12,3 +12,4 @@ AES(-128, -192, -256) and AES-CMAC implementation in C.
 
 ## License
 
+[MIT](https://github.com/megrxu/AES-CMAC/blob/master/LICENSE)
